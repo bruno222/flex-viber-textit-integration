@@ -22,6 +22,6 @@ We are using the newest [Flex Conversations](https://www.twilio.com/docs/flex/co
 
 ## Textit side:
 
-1. Go to [Textit Flow](https://textit.com/flow/) and import the file `./textit-flow-example.json` there.
+1. Go to [Textit Flow](https://textit.com/flow/) and import the file [textit-flow-example.json](https://github.com/bruno222/flex-textit-integration/blob/main/textit-flow-example.json) there.
 2. Change the both Webhooks to have your URLs you just deployed on Twilio.
 3. Open Viber and send the message "bruno" and then "agent" to be forwarded to an agent.
