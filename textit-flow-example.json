@@ -1,0 +1,385 @@
+{
+  "version": "13",
+  "site": "https://textit.com",
+  "flows": [
+    {
+      "name": "Test Bruno",
+      "uuid": "e34fb6ec-91f2-42e5-ac82-5be0e2f39623",
+      "spec_version": "13.1.0",
+      "language": "fra",
+      "type": "messaging",
+      "nodes": [
+        {
+          "uuid": "9ca91984-491f-4fb1-b4b7-b49a7d2f88f9",
+          "actions": [
+            {
+              "attachments": [],
+              "text": "Hi there. Say \"agent\" to speak with an Agent on Flex, or say anything else to continue on Textit flow.",
+              "type": "send_msg",
+              "all_urns": false,
+              "quick_replies": [],
+              "uuid": "e9474307-d4d8-4760-843c-3094387918f5"
+            }
+          ],
+          "exits": [
+            {
+              "uuid": "1ce27004-5a7d-4603-890f-b8b4abd874b5",
+              "destination_uuid": "f79eb88c-d2e8-447d-8de4-67dd4c0d3038"
+            }
+          ]
+        },
+        {
+          "uuid": "f79eb88c-d2e8-447d-8de4-67dd4c0d3038",
+          "actions": [],
+          "router": {
+            "type": "switch",
+            "default_category_uuid": "993603ad-a437-4583-aa0e-c1a4f11ec904",
+            "cases": [
+              {
+                "arguments": ["agent"],
+                "type": "has_any_word",
+                "uuid": "ae305efa-da48-4c43-aa6c-2a4350752c8f",
+                "category_uuid": "b0a69d14-b95e-451e-8abb-0fcf231239f5"
+              }
+            ],
+            "categories": [
+              {
+                "uuid": "b0a69d14-b95e-451e-8abb-0fcf231239f5",
+                "name": "Agent",
+                "exit_uuid": "9440cc69-2562-4287-8505-0a2e9f83666f"
+              },
+              {
+                "uuid": "993603ad-a437-4583-aa0e-c1a4f11ec904",
+                "name": "Other",
+                "exit_uuid": "32b81944-c547-4cad-8c4e-8858ec2fdc24"
+              }
+            ],
+            "operand": "@input.text",
+            "wait": {
+              "type": "msg"
+            },
+            "result_name": "msgreceived"
+          },
+          "exits": [
+            {
+              "uuid": "9440cc69-2562-4287-8505-0a2e9f83666f",
+              "destination_uuid": "c088e86b-e7d4-47b9-8ba2-255398cc05d6"
+            },
+            {
+              "uuid": "32b81944-c547-4cad-8c4e-8858ec2fdc24",
+              "destination_uuid": "b065f80e-604e-4dc5-9671-770b41b593cc"
+            }
+          ]
+        },
+        {
+          "uuid": "b065f80e-604e-4dc5-9671-770b41b593cc",
+          "actions": [
+            {
+              "attachments": [],
+              "text": "Continuing with textit...",
+              "type": "send_msg",
+              "quick_replies": [],
+              "uuid": "a6f2fa45-dad2-4c58-bb87-462f58a1e5ef"
+            }
+          ],
+          "exits": [
+            {
+              "uuid": "081c26dd-1c65-4eb2-a017-21eacb0d8cb5",
+              "destination_uuid": "f79eb88c-d2e8-447d-8de4-67dd4c0d3038"
+            }
+          ]
+        },
+        {
+          "uuid": "c088e86b-e7d4-47b9-8ba2-255398cc05d6",
+          "actions": [
+            {
+              "attachments": [],
+              "text": "Sending it to Twilio.....",
+              "type": "send_msg",
+              "all_urns": false,
+              "quick_replies": [],
+              "uuid": "8ef4d9e7-a55a-4391-a2b3-9ebf142b849f"
+            }
+          ],
+          "exits": [
+            {
+              "uuid": "06157b81-05e5-48e8-a7ac-bb507d573555",
+              "destination_uuid": "944d9b9b-27fe-43c1-aaef-34583536cc27"
+            }
+          ]
+        },
+        {
+          "uuid": "944d9b9b-27fe-43c1-aaef-34583536cc27",
+          "actions": [
+            {
+              "uuid": "6f4ebfdd-0213-43ba-8f6a-0835c09b541e",
+              "headers": {
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+              },
+              "type": "call_webhook",
+              "url": "https://bkilian.eu.ngrok.io/step1-create-channel",
+              "body": "@(json(object(\n  \"contact\", object(\n    \"uuid\", contact.uuid, \n    \"name\", contact.name, \n    \"urn\", contact.urn\n  ),\n  \"flow\", object(\n    \"uuid\", run.flow.uuid, \n    \"name\", run.flow.name\n  ),\n  \"results\", foreach_value(results, extract_object, \"value\", \"category\")\n)))",
+              "method": "POST",
+              "result_name": "createchannel"
+            }
+          ],
+          "router": {
+            "type": "switch",
+            "operand": "@results.createchannel.category",
+            "cases": [
+              {
+                "uuid": "99d8e3e4-eb01-4f09-9ef4-504767bcea6b",
+                "type": "has_only_text",
+                "arguments": ["Success"],
+                "category_uuid": "bb71a992-fed5-4ea5-adc8-bb2f5532f015"
+              }
+            ],
+            "categories": [
+              {
+                "uuid": "bb71a992-fed5-4ea5-adc8-bb2f5532f015",
+                "name": "Success",
+                "exit_uuid": "255ee1a3-dd82-485b-90ef-62e9e72433da"
+              },
+              {
+                "uuid": "6bd74f3b-95bc-42dc-9b11-959c2d195292",
+                "name": "Failure",
+                "exit_uuid": "d96308f7-6d2b-4517-9cfb-9ba163bb3b28"
+              }
+            ],
+            "default_category_uuid": "6bd74f3b-95bc-42dc-9b11-959c2d195292"
+          },
+          "exits": [
+            {
+              "uuid": "255ee1a3-dd82-485b-90ef-62e9e72433da",
+              "destination_uuid": "8c16a91d-5a4f-44fc-a4aa-2569d4297799"
+            },
+            {
+              "uuid": "d96308f7-6d2b-4517-9cfb-9ba163bb3b28",
+              "destination_uuid": "18a0a695-808f-4f80-a4de-31903eca764d"
+            }
+          ]
+        },
+        {
+          "uuid": "18a0a695-808f-4f80-a4de-31903eca764d",
+          "actions": [
+            {
+              "attachments": [],
+              "text": "Ops.. It has failed. Bye!",
+              "type": "send_msg",
+              "quick_replies": [],
+              "uuid": "2b058f74-26fb-4cc5-a3cd-94169f5d0038"
+            }
+          ],
+          "exits": [
+            {
+              "uuid": "24e79ff2-21b6-4232-97f0-933c9b25dd5c",
+              "destination_uuid": null
+            }
+          ]
+        },
+        {
+          "uuid": "8ac6252f-9215-4e20-903d-05fd14a86a6e",
+          "actions": [
+            {
+              "attachments": [],
+              "text": "Ops, failed to deliver this message. Please try it again.",
+              "type": "send_msg",
+              "quick_replies": [],
+              "uuid": "982fb63d-9af0-4396-b0d9-c7a27be3e528"
+            }
+          ],
+          "exits": [
+            {
+              "uuid": "0fca8893-f36b-4767-b8f3-e3eec8935d64",
+              "destination_uuid": "2227e411-7abd-49ba-bbd2-e5c4af068ce6"
+            }
+          ]
+        },
+        {
+          "uuid": "8c16a91d-5a4f-44fc-a4aa-2569d4297799",
+          "actions": [
+            {
+              "uuid": "a20e7ba8-440f-483a-bb8f-69302ed3093a",
+              "headers": {
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+              },
+              "type": "call_webhook",
+              "url": "https://bkilian.eu.ngrok.io/step2-textit-to-flex?channelSid=@webhook.channelSid",
+              "body": "@(json(object(\n  \"contact\", object(\n    \"uuid\", contact.uuid, \n    \"name\", contact.name, \n    \"urn\", contact.urn\n  ),\n  \"flow\", object(\n    \"uuid\", run.flow.uuid, \n    \"name\", run.flow.name\n  ),\n  \"results\", foreach_value(results, extract_object, \"value\", \"category\")\n)))",
+              "method": "POST",
+              "result_name": "Result-Twilio"
+            }
+          ],
+          "router": {
+            "type": "switch",
+            "operand": "@results.result_twilio.category",
+            "cases": [
+              {
+                "uuid": "02296d34-72bd-4d67-89b8-02d04c0a1666",
+                "type": "has_only_text",
+                "arguments": ["Success"],
+                "category_uuid": "a8b9ef88-1d9d-4e22-a7cd-b15b075f924f"
+              }
+            ],
+            "categories": [
+              {
+                "uuid": "a8b9ef88-1d9d-4e22-a7cd-b15b075f924f",
+                "name": "Success",
+                "exit_uuid": "a9d11293-2196-4aa4-af43-3995ef2e0dae"
+              },
+              {
+                "uuid": "b3374721-95cf-465d-bb8d-bbb397b342d9",
+                "name": "Failure",
+                "exit_uuid": "f8c75ec4-4478-4c25-be85-9bec94694ae0"
+              }
+            ],
+            "default_category_uuid": "b3374721-95cf-465d-bb8d-bbb397b342d9"
+          },
+          "exits": [
+            {
+              "uuid": "a9d11293-2196-4aa4-af43-3995ef2e0dae",
+              "destination_uuid": "2227e411-7abd-49ba-bbd2-e5c4af068ce6"
+            },
+            {
+              "uuid": "f8c75ec4-4478-4c25-be85-9bec94694ae0",
+              "destination_uuid": "8ac6252f-9215-4e20-903d-05fd14a86a6e"
+            }
+          ]
+        },
+        {
+          "uuid": "2227e411-7abd-49ba-bbd2-e5c4af068ce6",
+          "actions": [],
+          "router": {
+            "type": "switch",
+            "default_category_uuid": "663d4499-3bd9-4289-a9f3-7bb9d8eb219d",
+            "cases": [],
+            "categories": [
+              {
+                "uuid": "663d4499-3bd9-4289-a9f3-7bb9d8eb219d",
+                "name": "All Responses",
+                "exit_uuid": "576d5c66-cf45-4eb3-8271-9f087a301610"
+              }
+            ],
+            "operand": "@input.text",
+            "wait": {
+              "type": "msg"
+            },
+            "result_name": "Result"
+          },
+          "exits": [
+            {
+              "uuid": "576d5c66-cf45-4eb3-8271-9f087a301610",
+              "destination_uuid": "8c16a91d-5a4f-44fc-a4aa-2569d4297799"
+            }
+          ]
+        }
+      ],
+      "_ui": {
+        "nodes": {
+          "9ca91984-491f-4fb1-b4b7-b49a7d2f88f9": {
+            "position": {
+              "left": 480,
+              "top": 40
+            },
+            "type": "execute_actions"
+          },
+          "f79eb88c-d2e8-447d-8de4-67dd4c0d3038": {
+            "type": "wait_for_response",
+            "position": {
+              "left": 520,
+              "top": 200
+            },
+            "config": {
+              "cases": {}
+            }
+          },
+          "b065f80e-604e-4dc5-9671-770b41b593cc": {
+            "position": {
+              "left": 880,
+              "top": 400
+            },
+            "type": "execute_actions"
+          },
+          "c088e86b-e7d4-47b9-8ba2-255398cc05d6": {
+            "position": {
+              "left": 140,
+              "top": 453
+            },
+            "type": "execute_actions"
+          },
+          "944d9b9b-27fe-43c1-aaef-34583536cc27": {
+            "type": "split_by_webhook",
+            "position": {
+              "left": 140,
+              "top": 620
+            },
+            "config": {}
+          },
+          "18a0a695-808f-4f80-a4de-31903eca764d": {
+            "position": {
+              "left": 380,
+              "top": 680
+            },
+            "type": "execute_actions"
+          },
+          "8ac6252f-9215-4e20-903d-05fd14a86a6e": {
+            "position": {
+              "left": 1140,
+              "top": 940
+            },
+            "type": "execute_actions"
+          },
+          "8c16a91d-5a4f-44fc-a4aa-2569d4297799": {
+            "type": "split_by_webhook",
+            "position": {
+              "left": 580,
+              "top": 980
+            },
+            "config": {}
+          },
+          "2227e411-7abd-49ba-bbd2-e5c4af068ce6": {
+            "type": "wait_for_response",
+            "position": {
+              "left": 1000,
+              "top": 1400
+            },
+            "config": {
+              "cases": {}
+            }
+          }
+        },
+        "stickies": {}
+      },
+      "revision": 113,
+      "expire_after_minutes": 10080,
+      "localization": {}
+    }
+  ],
+  "campaigns": [],
+  "triggers": [
+    {
+      "trigger_type": "K",
+      "flow": {
+        "uuid": "e34fb6ec-91f2-42e5-ac82-5be0e2f39623",
+        "name": "Test Bruno"
+      },
+      "groups": [],
+      "exclude_groups": [],
+      "keyword": "bruno"
+    },
+    {
+      "trigger_type": "K",
+      "flow": {
+        "uuid": "e34fb6ec-91f2-42e5-ac82-5be0e2f39623",
+        "name": "Test Bruno"
+      },
+      "groups": [],
+      "exclude_groups": [],
+      "keyword": "redcross"
+    }
+  ],
+  "fields": [],
+  "groups": []
+}
