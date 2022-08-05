@@ -15,9 +15,6 @@ type MyEvent = {
   };
 };
 
-// If you want to use environment variables, you will need to type them like
-// this and add them to the Context in the function signature as
-// Context<MyContext> as you see below.
 type MyContext = {
   STUDIO_FLOW_SID: string;
   FULL_URL_STEP3_FLEX_TO_TEXTIT: string;
