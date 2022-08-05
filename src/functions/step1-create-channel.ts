@@ -56,7 +56,7 @@ export const handler: ServerlessFunctionSignature<MyContext, MyEvent> = async (c
     configuration: {
       method: 'POST',
       filters: ['onMessageAdded'],
-      url: `${FULL_URL_STEP3_FLEX_TO_TEXTIT}?urn=${encodeURI(urn)}&customerParticipantSid=${encodeURI(channelSid)}`,
+      url: `${FULL_URL_STEP3_FLEX_TO_TEXTIT}?urn=${encodeURI(urn)}`,
     },
     target: 'webhook',
   });
