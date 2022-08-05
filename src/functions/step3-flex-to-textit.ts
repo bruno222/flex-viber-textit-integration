@@ -36,7 +36,6 @@ export const handler: ServerlessFunctionSignature<MyContext, MyEvent> = async (c
     return callback(null, msg);
   }
 
-  const twilioClient = context.getTwilioClient();
   await sendMessageToViber(VIBER_AUTH_TOKEN, urn, Body);
   return callback(null, 'ok');
 };
