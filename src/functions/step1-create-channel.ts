@@ -63,5 +63,5 @@ export const handler: ServerlessFunctionSignature<MyContext, MyEvent> = async (c
 
   await Promise.all([promise1, promise2, promise3]);
 
-  return callback(null, JSON.stringify({ bruno: 'teste', channelSid }));
+  return callback(null, JSON.stringify({ channelSid }));
 };
