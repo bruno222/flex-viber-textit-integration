@@ -23,12 +23,7 @@ type MyEvent = {
   };
 };
 
-// If you want to use environment variables, you will need to type them like
-// this and add them to the Context in the function signature as
-// Context<MyContext> as you see below.
-type MyContext = {
-  GREETING?: string;
-};
+type MyContext = {};
 
 export const handler: ServerlessFunctionSignature<MyContext, MyEvent> = async (context, event, callback: ServerlessCallback) => {
   console.log('event received - step2: ', event);
