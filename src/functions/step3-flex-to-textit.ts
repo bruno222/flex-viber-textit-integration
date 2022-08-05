@@ -44,7 +44,7 @@ const sendMessageToViber = async (auth_token: string, urn: string, text: string)
   try {
     const body = JSON.stringify({
       auth_token,
-      receiver: urn.replace('viber:', ''),
+      receiver: urn.replace('viber:', '').replace(/ /gi, '+'),
       text,
       type: 'text',
     });
